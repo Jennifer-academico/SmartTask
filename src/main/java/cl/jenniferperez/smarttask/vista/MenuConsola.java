@@ -186,72 +186,74 @@ public class MenuConsola {
 
         int opcion;
         do {
-            mostrarMenuEdicion(tarea);
-            opcion = leerEntero("Elige una opcion: ");
-            ejecutarEdicion(opcion, tarea);
-        } while (opcion != 0);
-    }
+            salida.println();
+            salida.println("--- EDITAR TAREA (ID " + tarea.getId() + ") ---");
+            salida.println(tarea.obtenerDetalle());
+            salida.println("1.- Cambiar nombre");
+            salida.println("2.- Cambiar prioridad");
+            salida.println("3.- Cambiar fecha de vencimiento");
 
-    private void mostrarMenuEdicion(Tarea tarea) {
-        salida.println();
-        salida.println("--- EDITAR TAREA (ID " + tarea.getId() + ") ---");
-        salida.println(tarea.obtenerDetalle());
-        salida.println("1.- Cambiar nombre");
-        salida.println("2.- Cambiar prioridad");
-        salida.println("3.- Cambiar fecha de vencimiento");
-
-        if (tarea instanceof TareaNormal) {
-            salida.println("4.- Cambiar minutos antes del aviso");
-        } else if (tarea instanceof TareaUrgente) {
-            salida.println("4.- Cambiar frecuencia del recordatorio");
-        }
-
-        salida.println("0.- Volver al menu principal");
-    }
-
-    private void ejecutarEdicion(int opcion, Tarea tarea) {
-        try {
-            switch (opcion) {
-                case 1:
-                    String nuevoNombre = leerTextoNoVacio("Nuevo nombre: ");
-                    tarea.setNombre(nuevoNombre);
-                    salida.println("Nombre actualizado.");
-                    break;
-                case 2:
-                    int nuevaPrioridad = leerEntero("Nueva prioridad (1 a 3): ");
-                    tarea.setPrioridad(nuevaPrioridad);
-                    salida.println("Prioridad actualizada.");
-                    break;
-                case 3:
-                    LocalDate nuevaFecha = leerFecha("Nueva fecha de vencimiento (dd/mm/aaaa): ");
-                    tarea.setFechaVencimiento(nuevaFecha);
-                    salida.println("Fecha de vencimiento actualizada.");
-                    break;
-                case 4:
-                    editarCampoEspecifico(tarea);
-                    break;
-                case 0:
-                    break;
-                default:
-                    salida.println("Opcion invalida.");
+            if (tarea instanceof TareaNormal) {
+                salida.println("4.- Cambiar minutos antes del aviso");
+            } else if (tarea instanceof TareaUrgente) {
+                salida.println("4.- Cambiar frecuencia del recordatorio");
             }
-        } catch (IllegalArgumentException error) {
-            salida.println("Error: " + error.getMessage());
-        }
-    }
 
-    private void editarCampoEspecifico(Tarea tarea) {
-        if (tarea instanceof TareaNormal tareaNormal) {
-            int nuevosMinutos = leerEntero("Nuevos minutos antes del aviso: ");
-            tareaNormal.setMinutosAntes(nuevosMinutos);
-            salida.println("Minutos de aviso actualizados.");
-        } else if (tarea instanceof TareaUrgente tareaUrgente) {
-            int nuevaFrecuencia = leerEntero("Nueva frecuencia (minutos entre recordatorios): ");
-            tareaUrgente.setFrecuencia(nuevaFrecuencia);
-            salida.println("Frecuencia actualizada.");
-        } else {
-            salida.println("Opcion invalida.");
-        }
+            salida.println("0.- Volver al menu principal");
+
+            opcion = leerEntero("Elige una opcion: ");
+
+            try {
+                switch (opcion) {
+                    case 1:
+                        String nuevoNombre = leerTextoNoVacio("Nuevo nombre: ");
+                        boolean nombreCambiado = gestorTareas.editarNombre(id, nuevoNombre);
+                        if (nombreCambiado) {
+                            salida.println("Nombre actualizado.");
+                        } else {
+                            salida.println("No se pudo actualizar el nombre.");
+                        }
+                        break;
+                    case 2:
+                        int nuevaPrioridad = leerEntero("Nueva prioridad (1 a 3): ");
+                        boolean prioridadCambiada = gestorTareas.editarPrioridad(id, nuevaPrioridad);
+                        if (prioridadCambiada) {
+                            salida.println("Prioridad actualizada.");
+                        } else {
+                            salida.println("No se pudo actualizar la prioridad.");
+                        }
+                        break;
+                    case 3:
+                        LocalDate nuevaFecha = leerFecha("Nueva fecha de vencimiento (dd/mm/aaaa): ");
+                        boolean fechaCambiada = gestorTareas.editarFechaVencimiento(id, nuevaFecha);
+                        if (fechaCambiada) {
+                            salida.println("Fecha de vencimiento actualizada.");
+                        } else {
+                            salida.println("No se pudo actualizar la fecha.");
+                        }
+                        break;
+                    case 4:
+                        if (tarea instanceof TareaNormal) {
+                            int nuevosMinutos = leerEntero("Nuevos minutos antes del aviso: ");
+                            gestorTareas.editarMinutosAntes(id, nuevosMinutos);
+                            salida.println("Minutos de aviso actualizados.");
+                        } else if (tarea instanceof TareaUrgente) {
+                            int nuevaFrecuencia = leerEntero("Nueva frecuencia (minutos entre recordatorios): ");
+                            gestorTareas.editarFrecuencia(id, nuevaFrecuencia);
+                            salida.println("Frecuencia actualizada.");
+                        } else {
+                            salida.println("Opcion invalida.");
+                        }
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        salida.println("Opcion invalida.");
+                }
+            } catch (IllegalArgumentException error) {
+                salida.println("Error: " + error.getMessage());
+            }
+        } while (opcion != 0);
     }
 
     private int leerEntero(String mensaje) {

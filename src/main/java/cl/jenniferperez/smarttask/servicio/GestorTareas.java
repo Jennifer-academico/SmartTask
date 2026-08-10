@@ -146,6 +146,93 @@ public class GestorTareas {
     }
 
     /**
+     * Cambia el nombre de una tarea existente.
+     *
+     * @param id identificador de la tarea.
+     * @param nuevoNombre nuevo nombre, no puede estar vacio.
+     * @return {@code true} si se encontro y actualizo; {@code false} si no existe.
+     * @throws IllegalArgumentException si el nuevo nombre no es valido.
+     */
+    public boolean editarNombre(int id, String nuevoNombre) {
+        Tarea tarea = buscarPorId(id);
+        if (tarea == null) {
+            return false;
+        }
+        tarea.setNombre(nuevoNombre);
+        return true;
+    }
+
+    /**
+     * Cambia la prioridad de una tarea existente.
+     *
+     * @param id identificador de la tarea.
+     * @param nuevaPrioridad nueva prioridad entre 1 y 3.
+     * @return {@code true} si se encontro y actualizo; {@code false} si no existe.
+     * @throws IllegalArgumentException si la nueva prioridad no es valida.
+     */
+    public boolean editarPrioridad(int id, int nuevaPrioridad) {
+        Tarea tarea = buscarPorId(id);
+        if (tarea == null) {
+            return false;
+        }
+        tarea.setPrioridad(nuevaPrioridad);
+        return true;
+    }
+
+    /**
+     * Cambia la fecha de vencimiento de una tarea existente.
+     *
+     * @param id identificador de la tarea.
+     * @param nuevaFecha nueva fecha de vencimiento.
+     * @return {@code true} si se encontro y actualizo; {@code false} si no existe.
+     * @throws IllegalArgumentException si la nueva fecha no es valida.
+     */
+    public boolean editarFechaVencimiento(int id, LocalDate nuevaFecha) {
+        Tarea tarea = buscarPorId(id);
+        if (tarea == null) {
+            return false;
+        }
+        tarea.setFechaVencimiento(nuevaFecha);
+        return true;
+    }
+
+    /**
+     * Cambia los minutos de aviso de una tarea normal existente.
+     *
+     * @param id identificador de la tarea.
+     * @param nuevosMinutos nuevos minutos de anticipacion, mayor que 0.
+     * @return {@code true} si se encontro, es una TareaNormal y se actualizo;
+     *         {@code false} si no existe o no es una tarea normal.
+     * @throws IllegalArgumentException si los minutos no son validos.
+     */
+    public boolean editarMinutosAntes(int id, int nuevosMinutos) {
+        Tarea tarea = buscarPorId(id);
+        if (!(tarea instanceof TareaNormal tareaNormal)) {
+            return false;
+        }
+        tareaNormal.setMinutosAntes(nuevosMinutos);
+        return true;
+    }
+
+    /**
+     * Cambia la frecuencia de recordatorio de una tarea urgente existente.
+     *
+     * @param id identificador de la tarea.
+     * @param nuevaFrecuencia nuevos minutos entre recordatorios, mayor que 0.
+     * @return {@code true} si se encontro, es una TareaUrgente y se actualizo;
+     *         {@code false} si no existe o no es una tarea urgente.
+     * @throws IllegalArgumentException si la frecuencia no es valida.
+     */
+    public boolean editarFrecuencia(int id, int nuevaFrecuencia) {
+        Tarea tarea = buscarPorId(id);
+        if (!(tarea instanceof TareaUrgente tareaUrgente)) {
+            return false;
+        }
+        tareaUrgente.setFrecuencia(nuevaFrecuencia);
+        return true;
+    }
+
+    /**
      * Informa cuantas tareas existen.
      *
      * @return cantidad de tareas guardadas.
