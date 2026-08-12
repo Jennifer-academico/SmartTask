@@ -141,4 +141,102 @@ class MenuConsolaTest {
         assertTrue(texto.contains("Formato invalido"));
         assertEquals(1, gestor.cantidadTareas());
     }
+
+    @Test
+    void debeEditarNombreDeUnaTarea() {
+        GestorTareas gestor = new GestorTareas();
+        String fecha = LocalDate.now().plusDays(5).format(FORMATO);
+        String entrada = String.join("\n",
+                "1", "Estudiar", "2", fecha, "30",
+                "8", "1", "1", "Repasar materia", "0",
+                "0") + "\n";
+        ByteArrayOutputStream bytesSalida = new ByteArrayOutputStream();
+
+        MenuConsola menu = new MenuConsola(
+                gestor,
+                new Scanner(entrada),
+                new PrintStream(bytesSalida, true, StandardCharsets.UTF_8));
+
+        menu.iniciar();
+
+        String texto = bytesSalida.toString(StandardCharsets.UTF_8);
+        assertEquals("Repasar materia", gestor.buscarPorId(1).getNombre());
+        assertTrue(texto.contains("Nombre actualizado"));
+    }
+
+    @Test
+    void debeListarTareasActivasYCompletadas() {
+        GestorTareas gestor = new GestorTareas();
+        String fecha = LocalDate.now().plusDays(5).format(FORMATO);
+        String entrada = String.join("\n",
+                "1", "Estudiar", "2", fecha, "30",
+                "6", "1",
+                "4",
+                "5",
+                "0") + "\n";
+        ByteArrayOutputStream bytesSalida = new ByteArrayOutputStream();
+
+        MenuConsola menu = new MenuConsola(
+                gestor,
+                new Scanner(entrada),
+                new PrintStream(bytesSalida, true, StandardCharsets.UTF_8));
+
+        menu.iniciar();
+
+        String texto = bytesSalida.toString(StandardCharsets.UTF_8);
+        assertTrue(texto.contains("Tareas activas"));
+        assertTrue(texto.contains("Tareas completadas"));
+    }
+
+    @Test
+    void debeEditarTareaUrgenteCompleta() {
+        GestorTareas gestor = new GestorTareas();
+        String fecha = LocalDate.now().plusDays(5).format(FORMATO);
+        String nuevaFecha = LocalDate.now().plusDays(10).format(FORMATO);
+        String entrada = String.join("\n",
+                "2", "Entregar informe", "3", fecha, "15",
+                "8", "1",
+                "2", "1",
+                "3", nuevaFecha,
+                "4", "45",
+                "0",
+                "0") + "\n";
+        ByteArrayOutputStream bytesSalida = new ByteArrayOutputStream();
+
+        MenuConsola menu = new MenuConsola(
+                gestor,
+                new Scanner(entrada),
+                new PrintStream(bytesSalida, true, StandardCharsets.UTF_8));
+
+        menu.iniciar();
+
+        String texto = bytesSalida.toString(StandardCharsets.UTF_8);
+        assertEquals(1, gestor.buscarPorId(1).getPrioridad());
+        assertTrue(texto.contains("Prioridad actualizada"));
+        assertTrue(texto.contains("Fecha de vencimiento actualizada"));
+        assertTrue(texto.contains("Frecuencia actualizada"));
+    }
+
+    @Test
+    void debeRechazarOpcionInvalidaAlEditar() {
+        GestorTareas gestor = new GestorTareas();
+        String fecha = LocalDate.now().plusDays(5).format(FORMATO);
+        String entrada = String.join("\n",
+                "1", "Estudiar", "2", fecha, "30",
+                "8", "1",
+                "9",
+                "0",
+                "0") + "\n";
+        ByteArrayOutputStream bytesSalida = new ByteArrayOutputStream();
+
+        MenuConsola menu = new MenuConsola(
+                gestor,
+                new Scanner(entrada),
+                new PrintStream(bytesSalida, true, StandardCharsets.UTF_8));
+
+        menu.iniciar();
+
+        String texto = bytesSalida.toString(StandardCharsets.UTF_8);
+        assertTrue(texto.contains("Opcion invalida"));
+    }
 }
